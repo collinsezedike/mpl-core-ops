@@ -39,6 +39,18 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
+"@metaplex-foundation/mpl-core@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-core/-/mpl-core-1.6.0.tgz#31b9415215642ded78290b5ae261ecbfb65dbd85"
+  integrity sha512-iy56yXzd/KwKbXpQPymLOZVBn03035RXAGKOPRUUP/xPMR9SY52eC7aBUS9SSQDT2f/wWhShej6pvMuEo6LFvA==
+  dependencies:
+    "@msgpack/msgpack" "^3.0.0-beta2"
+
+"@msgpack/msgpack@^3.0.0-beta2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-3.1.2.tgz#fdd25cc2202297519798bbaf4689152ad9609e19"
+  integrity sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ==
+
 "@noble/curves@^1.4.2":
   version "1.9.7"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.9.7.tgz#79d04b4758a43e4bca2cbdc62e7771352fa6b951"
