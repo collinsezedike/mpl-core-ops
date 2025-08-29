@@ -5,3 +5,9 @@ pub struct CreateCollectionArgs {
     pub name: String,
     pub uri: String,
 }
+
+#[derive(AnchorDeserialize, AnchorSerialize)]
+pub struct CreateAssetArgs {
+    pub name: String,
+    pub uri: String,
+}

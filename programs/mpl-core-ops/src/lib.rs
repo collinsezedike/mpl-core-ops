@@ -18,4 +18,11 @@ pub mod mpl_core_ops {
     ) -> Result<()> {
         ctx.accounts.create_collection(args)
     }
+
+    pub fn create_asset(
+        ctx: Context<CreateAsset>,
+        args: CreateAssetArgs,
+    ) -> Result<()> {
+        ctx.accounts.create_asset(args)
+    }
 }
