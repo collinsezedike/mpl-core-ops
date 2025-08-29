@@ -1,12 +1,8 @@
 use anchor_lang::prelude::*;
 
-use mpl_core::{
-    ID as MPL_CORE_ID,
-    instructions::CreateCollectionV2CpiBuilder, 
-};
+use mpl_core::{instructions::CreateCollectionV2CpiBuilder, ID as MPL_CORE_ID};
 
 use crate::types::CreateCollectionArgs;
-
 
 #[derive(Accounts)]
 pub struct CreateCollection<'info> {
@@ -26,14 +22,13 @@ pub struct CreateCollection<'info> {
     pub mpl_core_program: UncheckedAccount<'info>,
 }
 
-
 impl<'info> CreateCollection<'info> {
     pub fn create_collection(&mut self, args: CreateCollectionArgs) -> Result<()> {
         let update_authority = match &self.update_authority {
             Some(update_authority) => Some(update_authority.to_account_info()),
             None => None,
         };
-        
+
         CreateCollectionV2CpiBuilder::new(&self.mpl_core_program.to_account_info())
             .collection(&self.collection.to_account_info())
             .payer(&self.payer.to_account_info())
@@ -42,7 +37,7 @@ impl<'info> CreateCollection<'info> {
             .name(args.name)
             .uri(args.uri)
             .invoke()?;
-      
+
         Ok(())
-      }
+    }
 }
