@@ -13,22 +13,21 @@ pub struct CreateAsset<'info> {
     pub asset: Signer<'info>,
 
     #[account(mut)]
-    /// CHECK: this account is validated by the mpl_core program
+    /// CHECK: This is the asset collection
     pub collection: Option<UncheckedAccount<'info>>,
     // pub collection: Option<Account<'info, BaseCollectionV1>>, // ❌ Doesn't work due to mismatch between Anchor account types and Core account types.
-
     pub authority: Option<Signer<'info>>,
 
-    /// CHECK: this account will be checked by the mpl_core program
+    /// CHECK: This is the owner of the asset
     pub owner: Option<UncheckedAccount<'info>>,
 
-    /// CHECK: This is the authority of the asset and will be checked by the mpl_core program
+    /// CHECK: This is the authority of the asset
     pub update_authority: Option<UncheckedAccount<'info>>,
 
     pub system_program: Program<'info, System>,
 
     #[account(address = MPL_CORE_ID)]
-    /// CHECK: this account is checked by the address constraint
+    /// CHECK: This is the MPL Core Program and is validated with the address
     pub mpl_core_program: UncheckedAccount<'info>,
 }
 

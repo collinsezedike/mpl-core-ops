@@ -12,13 +12,13 @@ pub struct CreateCollection<'info> {
     #[account(mut)]
     pub collection: Signer<'info>,
 
-    /// CHECK: This is the authority of the collection and will be checked by the mpl_core program
+    /// CHECK: This is the authority of the collection
     pub update_authority: Option<UncheckedAccount<'info>>,
 
     pub system_program: Program<'info, System>,
 
     #[account(address = MPL_CORE_ID)]
-    /// CHECK: this account is checked by the address constraint
+    /// CHECK: This is the MPL Core Program and is validated with the address
     pub mpl_core_program: UncheckedAccount<'info>,
 }
 
