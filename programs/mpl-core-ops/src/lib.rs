@@ -1,13 +1,10 @@
-pub mod constants;
-pub mod error;
 pub mod instructions;
-pub mod state;
+pub mod types;
 
 use anchor_lang::prelude::*;
 
-pub use constants::*;
 pub use instructions::*;
-pub use state::*;
+pub use types::*;
 
 declare_id!("htfkB267FHfayF1w33dg8an7JgEX7ubkqkadyrBgzvf");
 
@@ -15,7 +12,10 @@ declare_id!("htfkB267FHfayF1w33dg8an7JgEX7ubkqkadyrBgzvf");
 pub mod mpl_core_ops {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    pub fn create_collection(
+        ctx: Context<CreateCollection>,
+        args: CreateCollectionArgs,
+    ) -> Result<()> {
+        ctx.accounts.create_collection(args)
     }
 }
