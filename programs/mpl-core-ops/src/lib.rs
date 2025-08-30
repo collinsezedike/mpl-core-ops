@@ -22,4 +22,8 @@ pub mod mpl_core_ops {
     pub fn create_asset(ctx: Context<CreateAsset>, args: CreateAssetArgs) -> Result<()> {
         ctx.accounts.create_asset(args)
     }
+
+    pub fn freeze_asset(ctx: Context<FreezeAsset>) -> Result<()> {
+        ctx.accounts.freeze_asset()
+    }
 }
