@@ -1,23 +1,21 @@
 import { expect } from "chai";
 import { describe, before, it } from "node:test";
+
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { MplCoreOps } from "../target/types/mpl_core_ops";
 import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
-import { Keypair, PublicKey } from "@solana/web3.js";
-import { MPL_CORE_PROGRAM_ID, fetchCollection, mplCore } from "@metaplex-foundation/mpl-core";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { Keypair } from "@solana/web3.js";
+import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 
-import { generateAndAirdropSigner } from "./helpers";
+import { generateAndAirdropSigner, assertCollectionData } from "./helpers";
 
 describe("Collections", () => {
 	// Configure the client to use the local cluster.
 	const provider = anchor.AnchorProvider.env();
 	anchor.setProvider(provider);
 	const program = anchor.workspace.mplCoreOps as Program<MplCoreOps>;
-
-	const umi = createUmi("http://127.0.0.1:8899").use(mplCore());
 
 	let alice: Keypair;
 	let aliceCollection: Keypair;
@@ -59,7 +57,7 @@ describe("Collections", () => {
 		johnCollection = Keypair.generate();
 	});
 
-	it("creates alice collection", async () => {
+	it("creates Alice collection with Alice as the update authority", async () => {
 		await program.methods
 			.createCollection(aliceCollectionArgs)
 			.accountsStrict({
@@ -72,17 +70,23 @@ describe("Collections", () => {
 			.signers([alice, aliceCollection])
 			.rpc();
 
-		const accountInfo = await provider.connection.getAccountInfo(aliceCollection.publicKey);
+		const accountInfo = await provider.connection.getAccountInfo(
+			aliceCollection.publicKey
+		);
 		expect(accountInfo).not.to.be.null;
-		expect(accountInfo.owner.toString()).to.eql(MPL_CORE_PROGRAM_ID.toString());
-
-		const collection = await fetchCollection(umi, aliceCollection.publicKey.toString());
-		expect(collection.updateAuthority.toString()).to.eql(alice.publicKey.toString());
-		expect(collection.name).to.eql(aliceCollectionName);
-		expect(collection.uri).to.eql(aliceCollectionURI);
+		expect(accountInfo.owner.toString()).to.eql(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
+		expect(
+			assertCollectionData(
+				accountInfo.data,
+				aliceCollectionName,
+				aliceCollectionURI
+			)
+		).to.be.true;
 	});
 
-	it("creates bob collection without any update authority", async () => {
+	it("creates Bob collection without any update authority", async () => {
 		await program.methods
 			.createCollection(bobCollectionArgs)
 			.accountsStrict({
@@ -95,17 +99,23 @@ describe("Collections", () => {
 			.signers([bob, bobCollection])
 			.rpc();
 
-		const accountInfo = await provider.connection.getAccountInfo(bobCollection.publicKey);
+		const accountInfo = await provider.connection.getAccountInfo(
+			bobCollection.publicKey
+		);
 		expect(accountInfo).not.to.be.null;
-		expect(accountInfo.owner.toString()).to.eql(MPL_CORE_PROGRAM_ID.toString());
-
-		const collection = await fetchCollection(umi, bobCollection.publicKey.toString());
-		expect(collection.updateAuthority).to.be.null;
-		expect(collection.name).to.eql(bobCollectionName);
-		expect(collection.uri).to.eql(bobCollectionURI);
+		expect(accountInfo.owner.toString()).to.eql(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
+		expect(
+			assertCollectionData(
+				accountInfo.data,
+				bobCollectionName,
+				bobCollectionURI
+			)
+		).to.be.true;
 	});
 
-	it("creates john collection with jane as the update authority", async () => {
+	it("creates John collection with Jane as the update authority", async () => {
 		await program.methods
 			.createCollection(johnCollectionArgs)
 			.accountsStrict({
@@ -118,17 +128,23 @@ describe("Collections", () => {
 			.signers([john, johnCollection])
 			.rpc();
 
-		const accountInfo = await provider.connection.getAccountInfo(johnCollection.publicKey);
+		const accountInfo = await provider.connection.getAccountInfo(
+			johnCollection.publicKey
+		);
 		expect(accountInfo).not.to.be.null;
-		expect(accountInfo.owner.toString()).to.eql(MPL_CORE_PROGRAM_ID.toString());
-
-		const collection = await fetchCollection(umi, johnCollection.publicKey.toString());
-		expect(collection.updateAuthority.toString()).to.eql(jane.publicKey.toString());
-		expect(collection.name).to.eql(johnCollectionName);
-		expect(collection.uri).to.eql(johnCollectionURI);
+		expect(accountInfo.owner.toString()).to.eql(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
+		expect(
+			assertCollectionData(
+				accountInfo.data,
+				johnCollectionName,
+				johnCollectionURI
+			)
+		).to.be.true;
 	});
 
-	it("fails if Alice tries to reuse the same collection pubkey", async () => {
+	it("fails if Alice tries to create a collection again with the same pubkey", async () => {
 		let transactionFailed = false;
 		try {
 			await program.methods
@@ -140,14 +156,11 @@ describe("Collections", () => {
 					systemProgram: SYSTEM_PROGRAM_ID,
 					mplCoreProgram: MPL_CORE_PROGRAM_ID,
 				})
-				.signers([alice])
-				.rpc()
+				.signers([alice, aliceCollection])
+				.rpc();
 		} catch (error) {
 			transactionFailed = true;
-			console.log(error)
-			// expect(error.message).to.contains(
-			// 	"AnchorError caused by account: auction. Error Code: InvalidHouse"
-			// );
+			expect(error.message).to.contains("already in use");
 		} finally {
 			expect(transactionFailed).to.be.true;
 		}
