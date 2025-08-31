@@ -9,9 +9,9 @@ import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 
-import { generateAndAirdropSigner, createNewCollection, createNewAsset } from "./helpers";
+import { generateAndAirdropSigner, createNewAsset } from "./helpers";
 
-describe("Create Assets", () => {
+describe("Freeze Assets", () => {
 	// Configure the client to use the local cluster.
 	const provider = anchor.AnchorProvider.env();
 	anchor.setProvider(provider);
@@ -37,10 +37,10 @@ describe("Create Assets", () => {
 		jane = await generateAndAirdropSigner();
 		john = await generateAndAirdropSigner();
 
-		aliceAsset = await createNewAsset(alice.publicKey, alice.publicKey, true);
-		bobAsset = await createNewAsset(bob.publicKey, bob.publicKey, false);
-		janeAsset = await createNewAsset(null, jane.publicKey, true);
-		johnAsset =await createNewAsset(null, john.publicKey, false);
+		({ asset: aliceAsset, collection: aliceCollection } = await createNewAsset(alice, alice.publicKey, true));
+		({ asset: bobAsset } = await createNewAsset(bob, bob.publicKey, false));
+		({ asset: janeAsset } = await createNewAsset(jane, null, true));
+		({ asset: johnAsset } = await createNewAsset(john, null, false));
 	});
 
 	it("freezes Alice asset", async () => {
@@ -59,7 +59,7 @@ describe("Create Assets", () => {
 			.rpc();
 	});
 
-	it("freeze Bob asset with Bob as the update authority", async () => {
+	it("freezes Bob asset with Bob as the update authority", async () => {
 		await program.methods
 			.freezeAsset()
 			.accountsStrict({
@@ -73,6 +73,33 @@ describe("Create Assets", () => {
 			})
 			.signers([bob])
 			.rpc();
+	});
+
+	it("fails if Alice tries to transfer a frozen asset", async () => {
+		let transactionFailed = false;
+		try {
+			await program.methods
+				.transferAsset()
+				.accountsStrict({
+					payer: john.publicKey,
+					asset: aliceAsset,
+					authority: alice.publicKey,
+					newOwner: bob.publicKey,
+					collection: aliceCollection,
+					systemProgram: SYSTEM_PROGRAM_ID,
+					mplCoreProgram: MPL_CORE_PROGRAM_ID,
+				})
+				.signers([alice])
+				.rpc();
+		} catch (error) {
+			transactionFailed = true;
+			console.log(error);
+			// expect(error.message).to.contains(
+			// 	"Cannot specify both an update authority and collection on an asset"
+			// );
+		} finally {
+			expect(transactionFailed).to.be.true;
+		}
 	});
 
 	// it("creates Jane asset without a collection and update authority", async () => {

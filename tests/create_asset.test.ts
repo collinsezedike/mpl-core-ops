@@ -66,8 +66,8 @@ describe("Create Assets", () => {
 		janeAsset = Keypair.generate();
 		johnAsset = Keypair.generate();
 
-		aliceCollection = await createNewCollection(alice.publicKey);
-		johnCollection = await createNewCollection(john.publicKey);
+		aliceCollection = await createNewCollection(alice, alice.publicKey);
+		johnCollection = await createNewCollection(john, john.publicKey);
 	});
 
 	it("creates Alice asset with Alice collection", async () => {
