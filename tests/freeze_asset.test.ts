@@ -37,7 +37,8 @@ describe("Freeze Assets", () => {
 		jane = await generateAndAirdropSigner();
 		john = await generateAndAirdropSigner();
 
-		({ asset: aliceAsset, collection: aliceCollection } = await createNewAsset(alice, alice.publicKey, true));
+		({ asset: aliceAsset, collection: aliceCollection } =
+			await createNewAsset(alice, alice.publicKey, true));
 		({ asset: bobAsset } = await createNewAsset(bob, bob.publicKey, false));
 		({ asset: janeAsset } = await createNewAsset(jane, null, true));
 		({ asset: johnAsset } = await createNewAsset(john, null, false));
@@ -81,7 +82,7 @@ describe("Freeze Assets", () => {
 			await program.methods
 				.transferAsset()
 				.accountsStrict({
-					payer: john.publicKey,
+					payer: alice.publicKey,
 					asset: aliceAsset,
 					authority: alice.publicKey,
 					newOwner: bob.publicKey,
@@ -93,81 +94,33 @@ describe("Freeze Assets", () => {
 				.rpc();
 		} catch (error) {
 			transactionFailed = true;
-			console.log(error);
-			// expect(error.message).to.contains(
-			// 	"Cannot specify both an update authority and collection on an asset"
-			// );
+			expect(error.message).to.contains("Invalid Authority");
 		} finally {
 			expect(transactionFailed).to.be.true;
 		}
 	});
 
-	// it("creates Jane asset without a collection and update authority", async () => {
-	// 	await program.methods
-	// 		.createAsset(janeAssetArgs)
-	// 		.accountsStrict({
-	// 			payer: jane.publicKey,
-	// 			asset: janeAsset.publicKey,
-	// 			authority: jane.publicKey,
-	// 			owner: jane.publicKey,
-	// 			collection: null,
-	// 			updateAuthority: null,
-	// 			systemProgram: SYSTEM_PROGRAM_ID,
-	// 			mplCoreProgram: MPL_CORE_PROGRAM_ID,
-	// 		})
-	// 		.signers([jane, janeAsset])
-	// 		.rpc();
-	// });
-
-	// it("fails if John tries to create an asset with both a collection and an update authority", async () => {
-	// 	let transactionFailed = false;
-	// 	try {
-	// 		await program.methods
-	// 			.createAsset(johnAssetArgs)
-	// 			.accountsStrict({
-	// 				payer: john.publicKey,
-	// 				asset: johnAsset.publicKey,
-	// 				authority: john.publicKey,
-	// 				owner: john.publicKey,
-	// 				collection: johnCollection,
-	// 				updateAuthority: john.publicKey,
-	// 				systemProgram: SYSTEM_PROGRAM_ID,
-	// 				mplCoreProgram: MPL_CORE_PROGRAM_ID,
-	// 			})
-	// 			.signers([john, johnAsset])
-	// 			.rpc();
-	// 	} catch (error) {
-	// 		transactionFailed = true;
-	// 		expect(error.message).to.contains(
-	// 			"Cannot specify both an update authority and collection on an asset"
-	// 		);
-	// 	} finally {
-	// 		expect(transactionFailed).to.be.true;
-	// 	}
-	// });
-
-	// it("fails if Alice tries to recreate Alice's asset with update authority but no collection", async () => {
-	// 	let transactionFailed = false;
-	// 	try {
-	// 		await program.methods
-	// 			.createAsset(aliceAssetArgs)
-	// 			.accountsStrict({
-	// 				payer: alice.publicKey,
-	// 				asset: aliceAsset.publicKey,
-	// 				authority: alice.publicKey,
-	// 				owner: alice.publicKey,
-	// 				collection: null,
-	// 				updateAuthority: alice.publicKey,
-	// 				systemProgram: SYSTEM_PROGRAM_ID,
-	// 				mplCoreProgram: MPL_CORE_PROGRAM_ID,
-	// 			})
-	// 			.signers([alice, aliceAsset])
-	// 			.rpc();
-	// 	} catch (error) {
-	// 		transactionFailed = true;
-	// 		expect(error.message).to.contains("already in use");
-	// 	} finally {
-	// 		expect(transactionFailed).to.be.true;
-	// 	}
-	// });
+	it("fails if Bob tries to transfer a frozen asset", async () => {
+		let transactionFailed = false;
+		try {
+			await program.methods
+				.transferAsset()
+				.accountsStrict({
+					payer: bob.publicKey,
+					asset: bobAsset,
+					authority: bob.publicKey,
+					newOwner: john.publicKey,
+					collection: null,
+					systemProgram: SYSTEM_PROGRAM_ID,
+					mplCoreProgram: MPL_CORE_PROGRAM_ID,
+				})
+				.signers([bob])
+				.rpc();
+		} catch (error) {
+			transactionFailed = true;
+			expect(error.message).to.contains("Invalid Authority");
+		} finally {
+			expect(transactionFailed).to.be.true;
+		}
+	});
 });
