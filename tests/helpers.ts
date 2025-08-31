@@ -106,3 +106,31 @@ export async function createNewCollection(
 
     return collection.publicKey;
 }
+
+export async function createNewAsset(
+    updateAuthority: PublicKey | null,
+    owner: PublicKey,
+    inCollection: boolean
+): Promise<PublicKey> {
+    const payer = await generateAndAirdropSigner();
+    const collection = await createNewCollection(updateAuthority);
+    const asset = Keypair.generate();
+    const assetArgs = { name: "NEW ASSET", uri: "https://new.asset.uri.json" };
+
+    await program.methods
+        .createAsset(assetArgs)
+        .accountsStrict({
+            payer: payer.publicKey,
+            collection: inCollection ? collection : null,
+            asset: asset.publicKey,
+            authority: owner,
+            owner,
+            updateAuthority: inCollection ? null : updateAuthority,
+            systemProgram: SYSTEM_PROGRAM_ID,
+            mplCoreProgram: MPL_CORE_PROGRAM_ID,
+        })
+        .signers([payer, asset])
+        .rpc();
+
+    return asset.publicKey;
+}
