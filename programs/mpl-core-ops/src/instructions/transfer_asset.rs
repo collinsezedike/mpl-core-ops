@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use mpl_core::{ instructions::TransferV1CpiBuilder, ID as MPL_CORE_ID };
+use mpl_core::{instructions::TransferV1CpiBuilder, ID as MPL_CORE_ID};
 
 #[derive(Accounts)]
 pub struct TransferAsset<'info> {
