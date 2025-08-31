@@ -12,10 +12,12 @@ pub struct CreateAsset<'info> {
     #[account(mut)]
     pub asset: Signer<'info>,
 
+    // pub collection: Option<Account<'info, BaseCollectionV1>>,
+    // // ❌ Doesn't work due to mismatch between Anchor account types and Core account types.
     #[account(mut)]
     /// CHECK: This is the asset collection
     pub collection: Option<UncheckedAccount<'info>>,
-    // pub collection: Option<Account<'info, BaseCollectionV1>>, // ❌ Doesn't work due to mismatch between Anchor account types and Core account types.
+
     pub authority: Option<Signer<'info>>,
 
     /// CHECK: This is the owner of the asset

@@ -47,10 +47,10 @@ describe("Create Collections", () => {
 	let jane: Keypair;
 
 	before(async () => {
-		alice = await generateAndAirdropSigner(provider);
-		bob = await generateAndAirdropSigner(provider);
-		john = await generateAndAirdropSigner(provider);
-		jane = await generateAndAirdropSigner(provider);
+		alice = await generateAndAirdropSigner();
+		bob = await generateAndAirdropSigner();
+		john = await generateAndAirdropSigner();
+		jane = await generateAndAirdropSigner();
 
 		aliceCollection = Keypair.generate();
 		bobCollection = Keypair.generate();
@@ -81,7 +81,8 @@ describe("Create Collections", () => {
 			assertCollectionData(
 				accountInfo.data,
 				aliceCollectionName,
-				aliceCollectionURI
+				aliceCollectionURI,
+				alice.publicKey
 			)
 		).to.be.true;
 	});
@@ -110,7 +111,8 @@ describe("Create Collections", () => {
 			assertCollectionData(
 				accountInfo.data,
 				bobCollectionName,
-				bobCollectionURI
+				bobCollectionURI,
+				bob.publicKey // Not specifying an update authority defaults to the payer as the authority
 			)
 		).to.be.true;
 	});
@@ -139,7 +141,8 @@ describe("Create Collections", () => {
 			assertCollectionData(
 				accountInfo.data,
 				johnCollectionName,
-				johnCollectionURI
+				johnCollectionURI,
+				jane.publicKey
 			)
 		).to.be.true;
 	});
