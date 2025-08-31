@@ -3,33 +3,33 @@
 This project demonstrates how to build, interact with, and test **NFT operations** on Solana using the  
 [Metaplex Core (MPL Core)](https://developers.metaplex.com/core) program and [Anchor](https://www.anchor-lang.com/).
 
----
-
 ## ✨ Features
 
-- **Collection Management**
-  - Create and initialize NFT collections.
-  - Validate collection data (name, URI, update authority).
-  - Prevent unauthorized re-initialization.
+-   **Collection Management**
 
-- **Asset Creation**
-  - Mint new assets into collections or as standalone NFTs.
-  - Support for optional update authorities.
-  - Enforce constraints (e.g., not both collection & update authority at the same time).
+    -   Create and initialize NFT collections.
+    -   Validate collection data (name, URI, update authority).
+    -   Prevent unauthorized re-initialization.
 
-- **Freezing Assets**
-  - Freeze assets to prevent further transfers.
-  - Verify transfer restrictions on frozen assets.
-  - Ensure only authorized signers can freeze.
+-   **Asset Creation**
 
-- **Transfers**
-  - Attempted transfers of frozen assets fail with proper errors.
-  - Assets can be safely transferred when not frozen.
+    -   Mint new assets into collections or as standalone NFTs.
+    -   Support for optional update authorities.
+    -   Enforce constraints (e.g., not both collection & update authority at the same time).
 
----
+-   **Freezing Assets**
+
+    -   Freeze assets to prevent further transfers.
+    -   Verify transfer restrictions on frozen assets.
+    -   Ensure only authorized signers can freeze.
+
+-   **Transfers**
+    -   Attempted transfers of frozen assets fail with proper errors.
+    -   Assets can be safely transferred when not frozen.
 
 ## 📂 Project Structure
 
+```
 ├── Anchor.toml # Anchor workspace config
 ├── programs/
 │ └── mpl_core_ops/ # Custom Anchor program wrapping MPL Core
@@ -40,33 +40,42 @@ This project demonstrates how to build, interact with, and test **NFT operations
 │ ├── freeze.ts # Tests for freezing & transfer restrictions
 │ └── decoder.ts # Buffer decoding utilities
 └── README.md # You're here
-
----
-
-## 🛠️ Setup
-
-1. Install dependencies:
-
-```bash
-   npm install
 ```
 
-2. Start a local validator:
+## 🛠️ Usage
+
+### ⚡ Prerequisites
+
+Make sure you have the Rust, Solana, Yarn and Anchor installed. Follow [the official solana documentation](http://solana.com/en/docs/intro/installation) to install them.
+
+Also, configure Solana CLI to run against localhost:
 
 ```bash
-solana-test-validator
+solana config set --url localhost
 ```
 
-3. Build and deploy the program:
+### 🏗️ Setup
+
+1. Build the program:
 
 ```bash
 anchor build
-anchor deploy
 ```
 
+2. Install dependencies:
+
+```bash
+yarn install
+```
+
+3. Run the tests:
+
+```bash
+anchor test
+```
 
 ## 🚧 Notes
 
-- Uses the official MPL Core program for NFT primitives.  
-- The mpl_core_ops Anchor program is a thin wrapper to simplify tests.  
-- Buffer decoding is included to inspect raw on-chain account data for collections.  
+-   Uses the official MPL Core program for NFT primitives.
+-   The mpl_core_ops Anchor program is a thin wrapper to simplify tests.
+-   Buffer decoding is included to inspect raw on-chain account data for collections.
