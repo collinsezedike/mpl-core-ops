@@ -11,7 +11,7 @@ import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 
 import { generateAndAirdropSigner, assertCollectionData } from "./helpers";
 
-describe("Collections", () => {
+describe("Create Collections", () => {
 	// Configure the client to use the local cluster.
 	const provider = anchor.AnchorProvider.env();
 	anchor.setProvider(provider);
