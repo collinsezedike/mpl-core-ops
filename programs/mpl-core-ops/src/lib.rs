@@ -26,4 +26,8 @@ pub mod mpl_core_ops {
     pub fn freeze_asset(ctx: Context<FreezeAsset>) -> Result<()> {
         ctx.accounts.freeze_asset()
     }
+
+    pub fn transfer_asset(ctx: Context<TransferAsset>) -> Result<()> {
+        ctx.accounts.transfer_asset()
+    }
 }
