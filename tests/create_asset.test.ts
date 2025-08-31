@@ -12,48 +12,36 @@ import { MPL_CORE_PROGRAM_ID } from "@metaplex-foundation/mpl-core";
 import { generateAndAirdropSigner, createNewCollection } from "./helpers";
 
 describe("Create Assets", () => {
-	// Configure the client to use the local cluster.
 	const provider = anchor.AnchorProvider.env();
 	anchor.setProvider(provider);
 	const program = anchor.workspace.mplCoreOps as Program<MplCoreOps>;
+	const connection = provider.connection;
 
 	let alice: Keypair;
 	let aliceAsset: Keypair;
 	let aliceCollection: PublicKey;
 	const aliceAssetName = "ALICE ASSET";
 	const aliceAssetURI = "https://alice.asset.uri.json";
-	const aliceAssetArgs = {
-		name: aliceAssetName,
-		uri: aliceAssetURI,
-	};
+	const aliceAssetArgs = { name: aliceAssetName, uri: aliceAssetURI };
 
 	let bob: Keypair;
 	let bobAsset: Keypair;
 	const bobAssetName = "BOB ASSET";
 	const bobAssetURI = "https://bob.asset.uri.json";
-	const bobAssetArgs = {
-		name: bobAssetName,
-		uri: bobAssetURI,
-	};
+	const bobAssetArgs = { name: bobAssetName, uri: bobAssetURI };
 
 	let jane: Keypair;
 	let janeAsset: Keypair;
 	const janeAssetName = "JANE ASSET";
 	const janeAssetURI = "https://jane.asset.uri.json";
-	const janeAssetArgs = {
-		name: janeAssetName,
-		uri: janeAssetURI,
-	};
+	const janeAssetArgs = { name: janeAssetName, uri: janeAssetURI };
 
 	let john: Keypair;
 	let johnAsset: Keypair;
 	let johnCollection: PublicKey;
 	const johnAssetName = "JOHN ASSET";
 	const johnAssetURI = "https://john.asset.uri.json";
-	const johnAssetArgs = {
-		name: johnAssetName,
-		uri: johnAssetURI,
-	};
+	const johnAssetArgs = { name: johnAssetName, uri: johnAssetURI };
 
 	before(async () => {
 		alice = await generateAndAirdropSigner();
@@ -85,6 +73,14 @@ describe("Create Assets", () => {
 			})
 			.signers([alice, aliceAsset])
 			.rpc();
+
+		const accountInfo = await connection.getAccountInfo(
+			aliceAsset.publicKey
+		);
+		expect(accountInfo).to.not.be.null;
+		expect(accountInfo.owner.toString()).to.equal(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
 	});
 
 	it("creates Bob asset with Bob as the update authority", async () => {
@@ -102,6 +98,12 @@ describe("Create Assets", () => {
 			})
 			.signers([bob, bobAsset])
 			.rpc();
+
+		const accountInfo = await connection.getAccountInfo(bobAsset.publicKey);
+		expect(accountInfo).to.not.be.null;
+		expect(accountInfo.owner.toString()).to.equal(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
 	});
 
 	it("creates Jane asset without a collection and update authority", async () => {
@@ -119,6 +121,14 @@ describe("Create Assets", () => {
 			})
 			.signers([jane, janeAsset])
 			.rpc();
+
+		const accountInfo = await connection.getAccountInfo(
+			janeAsset.publicKey
+		);
+		expect(accountInfo).to.not.be.null;
+		expect(accountInfo.owner.toString()).to.equal(
+			MPL_CORE_PROGRAM_ID.toString()
+		);
 	});
 
 	it("fails if John tries to create an asset with both a collection and an update authority", async () => {
