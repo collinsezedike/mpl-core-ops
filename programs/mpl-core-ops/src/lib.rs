@@ -30,4 +30,8 @@ pub mod mpl_core_ops {
     pub fn transfer_asset(ctx: Context<TransferAsset>) -> Result<()> {
         ctx.accounts.transfer_asset()
     }
+
+    pub fn burn_asset(ctx: Context<BurnAsset>) -> Result<()> {
+        ctx.accounts.burn_asset()
+    }
 }
