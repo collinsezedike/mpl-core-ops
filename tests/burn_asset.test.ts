@@ -65,7 +65,7 @@ describe("Burn Assets", () => {
 				.rpc();
 		} catch (error) {
 			transactionFailed = true;
-			expect(error.message).to.contains("Invalid Authority");
+			expect(error.message).to.contains("Incorrect account");
 		} finally {
 			expect(transactionFailed).to.be.true;
 		}
